@@ -1,5 +1,4 @@
 import prompts from "prompts"
-import chalk from "chalk"
 import type { Model, Fields, Field, CompareFields } from "./types"
 import {
   removeColumnQI,
@@ -75,9 +74,7 @@ export const compareModel = async (
     const { ans } = await prompts({
       name: "ans",
       type: "confirm",
-      message: `${chalk.green(fieldName)} is missing in ${chalk.green(
-        old.modelName
-      )} model. Have you deleted it?`,
+      message: `${fieldName} is missing in ${old.modelName} model. Have you deleted it?`,
     })
     if (ans) {
       upMig.push(removeColumnQI(old.tableName, missingFields[fieldName]))
@@ -87,9 +84,7 @@ export const compareModel = async (
       const { newField } = await prompts({
         name: "newField",
         type: "select",
-        message: `Select current field for ${chalk.bold.bgBlack.green(
-          fieldName
-        )} Field`,
+        message: `Select current field for ${fieldName} Field`,
         choices: Object.entries(newFields).map(([key, value]) => ({
           title: value.fieldName,
           value: value.field,

@@ -1,6 +1,5 @@
 import fs from 'fs/promises';
 import prompts from 'prompts';
-import chalk from 'chalk';
 
 const convertReference = (ref) => {
   return { table: ref.model, field: ref.key };
@@ -255,9 +254,7 @@ const compareModel = async (current, old, upMig, downMig) => {
     const { ans } = await prompts({
       name: "ans",
       type: "confirm",
-      message: `${chalk.green(fieldName)} is missing in ${chalk.green(
-        old.modelName
-      )} model. Have you deleted it?`
+      message: `${fieldName} is missing in ${old.modelName} model. Have you deleted it?`
     });
     if (ans) {
       upMig.push(removeColumnQI(old.tableName, missingFields[fieldName]));
@@ -267,9 +264,7 @@ const compareModel = async (current, old, upMig, downMig) => {
       const { newField } = await prompts({
         name: "newField",
         type: "select",
-        message: `Select current field for ${chalk.bold.bgBlack.green(
-          fieldName
-        )} Field`,
+        message: `Select current field for ${fieldName} Field`,
         choices: Object.entries(newFields).map(([key, value]) => ({
           title: value.fieldName,
           value: value.field
@@ -408,10 +403,10 @@ const compareSchema = async (current, old = {
   const date = /* @__PURE__ */ new Date();
   const name = `${date.getUTCFullYear()}${date.getUTCMonth().toString().padStart(2, "0")}${date.getUTCDate().toString().padStart(2, "0")}${date.getUTCHours().toString().padStart(2, "0")}${date.getUTCMinutes().toString().padStart(2, "0")}${date.getUTCSeconds().toString().padStart(2, "0")}-${migName}`;
   await fs.writeFile(
-    (options?.get("exportPath") ?? `./migrations/`) + `${name}.js`,
+    (options["exportPath"] ?? `./migrations/`) + `${name}.js`,
     script.replaceAll(`"%%`, "").replaceAll(`%%"`, "").replaceAll("\\", "")
   );
-  await fs.writeFile((options?.get("exportPath") ?? `./migrations/`) + `schema.json`, saveCurrent);
+  await fs.writeFile((options["exportPath"] ?? `./migrations/`) + `schema.json`, saveCurrent);
 };
 
 const makemigration = async (db, oldSchema, options) => {

@@ -140,8 +140,8 @@ export const compareSchema = async (
     .getUTCSeconds()
     .toString()
     .padStart(2, "0")}-${migName}`
-  await fs.writeFile((options?.get('exportPath') ?? `./migrations/`) + `${name}.js`,
+  await fs.writeFile((options?.['exportPath'] ?? `./migrations/`) + `${name}.js`,
     script.replaceAll(`"%%`, "").replaceAll(`%%"`, "").replaceAll("\\", "")
   )
-  await fs.writeFile((options?.get('exportPath') ?? `./migrations/`) + `schema.json`, saveCurrent)
+  await fs.writeFile((options?.['exportPath'] ?? `./migrations/`) + `schema.json`, saveCurrent)
 }
