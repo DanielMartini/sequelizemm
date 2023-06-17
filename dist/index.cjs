@@ -2,13 +2,11 @@
 
 const fs = require('fs/promises');
 const prompts = require('prompts');
-const chalk = require('chalk');
 
 function _interopDefaultCompat (e) { return e && typeof e === 'object' && 'default' in e ? e.default : e; }
 
 const fs__default = /*#__PURE__*/_interopDefaultCompat(fs);
 const prompts__default = /*#__PURE__*/_interopDefaultCompat(prompts);
-const chalk__default = /*#__PURE__*/_interopDefaultCompat(chalk);
 
 const convertReference = (ref) => {
   return { table: ref.model, field: ref.key };
@@ -263,9 +261,7 @@ const compareModel = async (current, old, upMig, downMig) => {
     const { ans } = await prompts__default({
       name: "ans",
       type: "confirm",
-      message: `${chalk__default.green(fieldName)} is missing in ${chalk__default.green(
-        old.modelName
-      )} model. Have you deleted it?`
+      message: ` is missing in model. Have you deleted it?`
     });
     if (ans) {
       upMig.push(removeColumnQI(old.tableName, missingFields[fieldName]));
@@ -275,9 +271,7 @@ const compareModel = async (current, old, upMig, downMig) => {
       const { newField } = await prompts__default({
         name: "newField",
         type: "select",
-        message: `Select current field for ${chalk__default.bold.bgBlack.green(
-          fieldName
-        )} Field`,
+        message: `Select current field for Field`,
         choices: Object.entries(newFields).map(([key, value]) => ({
           title: value.fieldName,
           value: value.field
