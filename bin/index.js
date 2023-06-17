@@ -13,6 +13,7 @@ const parsedArgs = () => {
   // Define default values for arguments
   let filePath = "sequelize.js"
   let exportName = "sequelize"
+  let exportMigrationPath = undefined
 
   // Parse arguments
   for (let i = 0; i < args.length; i++) {
@@ -27,12 +28,19 @@ const parsedArgs = () => {
         exportName = args[i + 1]
         i++
         break
+      case "-p":
+      case "--path":
+        exportMigrationPath = args[i + 1]
+        i++
+        break
       default:
         console.log(`Usage: ${chalk.bold("sequelizemm [options]")}
   Options:
     -f, --file    Path to a file that exports the Sequelize instance (default: sequelize.js)
     -n, --name    Name of sequelize instance export (default: sequelize)
-    -h, --help    Display this help message`)
+    -p, --path    Path where migrations files will be exported
+    -h, --help    Display this help message`
+        )
         process.exit(1)
     }
   }
@@ -42,13 +50,13 @@ const parsedArgs = () => {
 const require = createRequire(import.meta.url)
 const cli = async () => {
   try {
-    const { filePath, exportName } = parsedArgs()
-    const base = await import(pathToFileURL(join(process.cwd(), filePath)))
+    const { filePath, exportName, exportMigrationPath } = parsedArgs()
+    const base = await import(pathToFileURL(join(process.cwd(), exportMigrationPath ?? filePath)))
     const dbi = base[exportName]
     if (!dbi || "Sequelize" !== dbi.constructor.name) {
       throw new Error("Sequelize export not found")
     }
-    const schemaPath = join(process.cwd(), "migrations/schema.json")
+    const schemaPath = join(process.cwd(), exportMigrationPath ?? "migrations" + "/schema.json")
     if (existsSync(schemaPath)) {
       const oldSchema = require(schemaPath)
       await makemigration(dbi, oldSchema)
