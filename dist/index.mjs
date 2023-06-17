@@ -300,7 +300,7 @@ const compareSchema = async (current, old = {
   fKeyConstraints: {},
   models: {},
   uKeyConstraints: {}
-}) => {
+}, options) => {
   const saveCurrent = JSON.stringify(current);
   const upQI = [];
   const downQI = [];
@@ -408,18 +408,18 @@ const compareSchema = async (current, old = {
   const date = /* @__PURE__ */ new Date();
   const name = `${date.getUTCFullYear()}${date.getUTCMonth().toString().padStart(2, "0")}${date.getUTCDate().toString().padStart(2, "0")}${date.getUTCHours().toString().padStart(2, "0")}${date.getUTCMinutes().toString().padStart(2, "0")}${date.getUTCSeconds().toString().padStart(2, "0")}-${migName}`;
   await fs.writeFile(
-    `./migrations/${name}.js`,
+    (options?.get("exportPath") ?? `./migrations/`) + `${name}.js`,
     script.replaceAll(`"%%`, "").replaceAll(`%%"`, "").replaceAll("\\", "")
   );
-  await fs.writeFile(`./migrations/schema.json`, saveCurrent);
+  await fs.writeFile((options?.get("exportPath") ?? `./migrations/`) + `schema.json`, saveCurrent);
 };
 
-const makemigration = async (db, oldSchema) => {
+const makemigration = async (db, oldSchema, options) => {
   const current = currentSchema(db);
   if (oldSchema) {
-    await compareSchema(current, oldSchema);
+    await compareSchema(current, oldSchema, options);
   } else {
-    await compareSchema(current);
+    await compareSchema(current, void 0, options);
   }
 };
 

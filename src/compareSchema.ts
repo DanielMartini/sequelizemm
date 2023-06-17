@@ -17,7 +17,8 @@ export const compareSchema = async (
     fKeyConstraints: {},
     models: {},
     uKeyConstraints: {},
-  }
+  },
+  options?: { [key: string]: any }
 ) => {
   const saveCurrent = JSON.stringify(current)
   const upQI: string[] = []
@@ -139,9 +140,8 @@ export const compareSchema = async (
     .getUTCSeconds()
     .toString()
     .padStart(2, "0")}-${migName}`
-  await fs.writeFile(
-    `./migrations/${name}.js`,
+  await fs.writeFile((options?.get('exportPath') ?? `./migrations/`) + `${name}.js`,
     script.replaceAll(`"%%`, "").replaceAll(`%%"`, "").replaceAll("\\", "")
   )
-  await fs.writeFile(`./migrations/schema.json`, saveCurrent)
+  await fs.writeFile((options?.get('exportPath') ?? `./migrations/`) + `schema.json`, saveCurrent)
 }

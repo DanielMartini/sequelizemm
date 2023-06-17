@@ -2,11 +2,13 @@
 
 const fs = require('fs/promises');
 const prompts = require('prompts');
+const chalk = require('chalk');
 
 function _interopDefaultCompat (e) { return e && typeof e === 'object' && 'default' in e ? e.default : e; }
 
 const fs__default = /*#__PURE__*/_interopDefaultCompat(fs);
 const prompts__default = /*#__PURE__*/_interopDefaultCompat(prompts);
+const chalk__default = /*#__PURE__*/_interopDefaultCompat(chalk);
 
 const convertReference = (ref) => {
   return { table: ref.model, field: ref.key };
@@ -261,7 +263,9 @@ const compareModel = async (current, old, upMig, downMig) => {
     const { ans } = await prompts__default({
       name: "ans",
       type: "confirm",
-      message: ` is missing in model. Have you deleted it?`
+      message: `${chalk__default.green(fieldName)} is missing in ${chalk__default.green(
+        old.modelName
+      )} model. Have you deleted it?`
     });
     if (ans) {
       upMig.push(removeColumnQI(old.tableName, missingFields[fieldName]));
@@ -271,7 +275,9 @@ const compareModel = async (current, old, upMig, downMig) => {
       const { newField } = await prompts__default({
         name: "newField",
         type: "select",
-        message: `Select current field for Field`,
+        message: `Select current field for ${chalk__default.bold.bgBlack.green(
+          fieldName
+        )} Field`,
         choices: Object.entries(newFields).map(([key, value]) => ({
           title: value.fieldName,
           value: value.field
@@ -302,7 +308,7 @@ const compareSchema = async (current, old = {
   fKeyConstraints: {},
   models: {},
   uKeyConstraints: {}
-}) => {
+}, options) => {
   const saveCurrent = JSON.stringify(current);
   const upQI = [];
   const downQI = [];
@@ -410,18 +416,18 @@ const compareSchema = async (current, old = {
   const date = /* @__PURE__ */ new Date();
   const name = `${date.getUTCFullYear()}${date.getUTCMonth().toString().padStart(2, "0")}${date.getUTCDate().toString().padStart(2, "0")}${date.getUTCHours().toString().padStart(2, "0")}${date.getUTCMinutes().toString().padStart(2, "0")}${date.getUTCSeconds().toString().padStart(2, "0")}-${migName}`;
   await fs__default.writeFile(
-    `./migrations/${name}.js`,
+    (options['exportPath'] ?? `./migrations/`) + `${name}.js`,
     script.replaceAll(`"%%`, "").replaceAll(`%%"`, "").replaceAll("\\", "")
   );
-  await fs__default.writeFile(`./migrations/schema.json`, saveCurrent);
+  await fs__default.writeFile((options['exportPath'] ?? `./migrations/`) + `schema.json`, saveCurrent);
 };
 
-const makemigration = async (db, oldSchema) => {
+const makemigration = async (db, oldSchema, options) => {
   const current = currentSchema(db);
   if (oldSchema) {
-    await compareSchema(current, oldSchema);
+    await compareSchema(current, oldSchema, options);
   } else {
-    await compareSchema(current);
+    await compareSchema(current, void 0, options);
   }
 };
 

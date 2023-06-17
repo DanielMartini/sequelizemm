@@ -59,6 +59,6 @@ interface Schema {
     uKeyConstraints: UKeyConstraints;
 }
 
-declare const makemigration: (db: Sequelize, oldSchema?: Schema) => Promise<void>;
+declare const makemigration: (db: Sequelize, oldSchema?: Schema, options?: { [key: string]: any }) => Promise<void>;
 
 export { makemigration };
